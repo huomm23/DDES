@@ -3,3 +3,8 @@ D:\Users\Administrator\Documents\GitHub\DDES\DDES\bin\Debug\DDES.pdb
 D:\Users\Administrator\Documents\GitHub\DDES\DDES\obj\Debug\DDES.csprojResolveAssemblyReference.cache
 D:\Users\Administrator\Documents\GitHub\DDES\DDES\obj\Debug\DDES.dll
 D:\Users\Administrator\Documents\GitHub\DDES\DDES\obj\Debug\DDES.pdb
+C:\Users\huomm\Source\Repos\DDES\DDES\obj\Debug\DDES.csprojResolveAssemblyReference.cache
+C:\Users\huomm\Source\Repos\DDES\DDES\obj\Debug\DDES.dll
+C:\Users\huomm\Source\Repos\DDES\DDES\obj\Debug\DDES.pdb
+C:\Users\huomm\Source\Repos\DDES\DDES\bin\Debug\DDES.dll
+C:\Users\huomm\Source\Repos\DDES\DDES\bin\Debug\DDES.pdb

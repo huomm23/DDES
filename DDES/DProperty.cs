@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -37,7 +38,7 @@ namespace DDES
         public PropertyInfo PropertyInfo { get; private set; }
         public Type PropertyType { get; private set; }
         public Type DeclaringType { get; private set; }
-        public bool CanRead{ get; private set; }
+        public bool CanRead { get; private set; }
         public bool CanWrite { get; private set; }
         public bool IsPublic { get; private set; }
         public bool IsStatic { get; private set; }
@@ -45,7 +46,7 @@ namespace DDES
 
         /// <summary> 用于读取对象当前属性/字段的委托
         /// </summary>
-        public Func<object,object> Getter { get; private set; }
+        public Func<object, object> Getter { get; private set; }
 
         /// <summary> 用于设置对象当前属性/字段的委托
         /// </summary>
@@ -72,7 +73,7 @@ namespace DDES
                 IsStatic = set.IsStatic;
             }
 
-           if (pi.DeclaringType.Name.StartsWith("<>f__AnonymousType")) //匿名类
+            if (pi.DeclaringType.Name.StartsWith("<>f__AnonymousType")) //匿名类
             {
                 CanWrite = true;
                 IsPublic = false;
@@ -101,6 +102,25 @@ namespace DDES
             //    };
             //}
         }
+        /// <summary> typeof(Object)
+        /// </summary>
+        private static readonly Type TypeObject = typeof(Object);
+
+        /// <summary> [ typeof(Object) ]
+        /// </summary>
+        private static readonly Type[] TypesObject = { typeof(Object) };
+
+        /// <summary> [ typeof(Object),typeof(Object) ]
+        /// </summary>
+        private static readonly Type[] Types2Object = { typeof(Object), typeof(Object) };
+
+        /// <summary> [ typeof(object[]) ]
+        /// </summary>
+        private static readonly Type[] TypesObjects = { typeof(object[]) };
+
+        /// <summary> [ typeof(Object), typeof(object[])  ]
+        /// </summary>
+        private static readonly Type[] TypesObjectObjects = { typeof(Object), typeof(object[]) };
 
         /// <summary> IL构造一个用于获取对象属性值的委托
         /// </summary>
@@ -139,7 +159,7 @@ namespace DDES
                 il.Emit(OpCodes.Box, prop.PropertyType);
             }
             il.Emit(OpCodes.Ret);
-            return (Func<object,object>)dm.CreateDelegate(typeof(Func<object, object>));
+            return (Func<object, object>)dm.CreateDelegate(typeof(Func<object, object>));
         }
 
         /// <summary> IL类型转换指令
@@ -168,33 +188,60 @@ namespace DDES
         /// <exception cref="ArgumentException">对象无法获取属性/字段的值</exception>
         public object GetValue(object obj)
         {
-            return null;
-            //if (!CanRead)
-            //{
-            //    ErrorGetter(null);
-            //}
-            //else if (instance == null)
-            //{
-            //    if (Static == false)
-            //    {
-            //        throw new ArgumentNullException("instance", "实例属性对象不能为null");
-            //    }
-            //}
-            //else if (ClassType.IsInstanceOfType(instance) == false)
-            //{
-            //    throw new ArgumentException("对象[" + instance + "]无法获取[" + MemberInfo + "]的值");
-            //}
+            if (!CanRead)
+            {
+                throw new Exception();
+                //ErrorGetter(null);
+            }
+            else if (obj == null)
+            {
+                if (IsStatic == false)
+                {
+                    throw new ArgumentNullException("instance", "实例属性对象不能为null");
+                }
+            }
+            else if (DeclaringType.IsInstanceOfType(obj) == false)
+            {
+                throw new ArgumentException("对象[" + obj + "]无法获取[" + DeclaringType + "]的值");
+            }
 
-            //try
-            //{
-            //    return Getter(instance);
-            //}
-            //catch (Exception ex)
-            //{
-            //    var message = $"{MemberInfo.ReflectedType.ToString()}.{Name}属性取值失败";
-            //    Trace.WriteLine(ex, message);
-            //    throw new TargetInvocationException(message + ",原因见内部异常", ex);
-            //}
+            try
+            {
+                return Getter(obj);
+            }
+            catch (Exception ex)
+            {
+                var message = $"{PropertyInfo.ToString()}.{Name}属性取值失败";
+                Trace.WriteLine(ex, message);
+                throw new TargetInvocationException(message + ",原因见内部异常", ex);
+            }
+        }
+
+        /// <summary> 如果是数组,则获取数组中元素的类型
+        /// </summary>
+        /// <param name="member"></param>
+        /// <returns></returns>
+        private static Type GetOwnerType(MemberInfo member)
+        {
+            //owner 是一个接口、一个数组、一个开放式泛型类型或一个泛型类型或方法的类型参数。
+            Type type = member.ReflectedType;
+            while (true)
+            {
+                if (type.IsArray)
+                {
+                    type = member.ReflectedType.GetElementType();
+                }
+                else if (
+                    type.IsGenericParameter ||
+                    type.IsInterface)
+                {
+                    return typeof(object);
+                }
+                else
+                {
+                    return type;
+                }
+            }
         }
     }
 }
