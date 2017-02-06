@@ -1,0 +1,5 @@
+D:\Users\Administrator\Documents\GitHub\DDES\DDES\bin\Debug\DDES.dll
+D:\Users\Administrator\Documents\GitHub\DDES\DDES\bin\Debug\DDES.pdb
+D:\Users\Administrator\Documents\GitHub\DDES\DDES\obj\Debug\DDES.csprojResolveAssemblyReference.cache
+D:\Users\Administrator\Documents\GitHub\DDES\DDES\obj\Debug\DDES.dll
+D:\Users\Administrator\Documents\GitHub\DDES\DDES\obj\Debug\DDES.pdb

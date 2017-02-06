@@ -1,0 +1,7 @@
+D:\Users\Administrator\Documents\GitHub\DDES\Tester\bin\Debug\Tester.exe
+D:\Users\Administrator\Documents\GitHub\DDES\Tester\bin\Debug\Tester.pdb
+D:\Users\Administrator\Documents\GitHub\DDES\Tester\bin\Debug\DDES.dll
+D:\Users\Administrator\Documents\GitHub\DDES\Tester\bin\Debug\DDES.pdb
+D:\Users\Administrator\Documents\GitHub\DDES\Tester\obj\Debug\Tester.csprojResolveAssemblyReference.cache
+D:\Users\Administrator\Documents\GitHub\DDES\Tester\obj\Debug\Tester.exe
+D:\Users\Administrator\Documents\GitHub\DDES\Tester\obj\Debug\Tester.pdb
