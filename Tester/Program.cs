@@ -9,10 +9,21 @@ namespace Tester
 {
     class Program
     {
+        public class IT
+        {
+            public string N { get; set; }
+        }
+        public class T : IT {
+            public string M { get; set; }
+        }
         static void Main(string[] args)
         {
+            var t = new { A = 213 };
+            var pi = t.GetType().GetProperty("A");
             User u = new User();
             CodeTimer.Initialize();
+            //DProperty prop = DType.Create(u.GetType()).Properties["Name"];
+
             CodeTimer.Time("MethodInfo", 1000000, () => GetName2(u));
             CodeTimer.Time("dynamic", 1000000, () => GetName3(u));
             CodeTimer.Time("fast ref", 1000000, () => GetName(u));
