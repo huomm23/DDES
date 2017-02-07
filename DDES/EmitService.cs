@@ -91,6 +91,121 @@ namespace DDES
             return (Action<object, object>)dm.CreateDelegate(typeof(Action<object, object>));
         }
 
+        public static Func<object, object[], object> CreateIndexGetter(PropertyInfo prop, Type owner = null)
+        {
+            if (prop == null)
+            {
+                return null;
+            }
+            var method = new DynamicMethod("", typeof(Object), new Type[] { typeof(Object), typeof(Object) }, owner ?? GetOwnerType(prop), true);
+            var il = method.GetILGenerator();
+            var met = prop.GetGetMethod(true);
+            if (met == null)
+            {
+                return null;
+            }
+            if (met.IsStatic)
+            {
+                il.Emit(OpCodes.Call, met);
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                EmitCast(il, prop.DeclaringType);
+
+                var ps = prop.GetIndexParameters();
+                var l = ps.Length;
+
+                for (int i = 0; i < l; i++)
+                {
+                    il.Emit(OpCodes.Ldarg_1);
+                    il.Emit(OpCodes.Ldc_I4, i);
+                    il.Emit(OpCodes.Ldelem_Ref);
+
+                    if (ps[i].ParameterType.IsValueType)
+                    {
+                        il.Emit(OpCodes.Unbox_Any, ps[i].ParameterType);
+                    }
+                }
+
+                if (prop.DeclaringType.IsValueType)
+                {
+                    il.Emit(OpCodes.Call, met);
+                }
+                else
+                {
+                    il.Emit(OpCodes.Callvirt, met);
+                }
+            }
+            if (prop.PropertyType.IsValueType)
+            {
+                il.Emit(OpCodes.Box, prop.PropertyType);
+            }
+            il.Emit(OpCodes.Ret);
+            return (Func<object, object[], object>)method.CreateDelegate(typeof(Func<object, object[], object>));
+        }
+
+        public static Action<object, object,object[]> CreateIndexSetter(PropertyInfo prop, Type owner = null)
+        {
+
+            if (prop == null)
+            {
+                return null;
+            }
+            if (prop.DeclaringType.IsValueType)
+            {
+                throw new NotSupportedException("值类型无法通过方法给其属性或字段赋值");
+            }
+            var dm = new DynamicMethod("", null, new Type[] { typeof(object), typeof(object), typeof(object) }, owner ?? GetOwnerType(prop), true);
+            var set = prop.GetSetMethod(true);
+            if (set == null)
+            {
+                return null;
+            }
+            var il = dm.GetILGenerator();
+
+            if (set.IsStatic)
+            {
+                il.Emit(OpCodes.Ldarg_1);
+                EmitCast(il, prop.PropertyType, false);
+                il.Emit(OpCodes.Call, set);
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Castclass, prop.DeclaringType);
+                il.Emit(OpCodes.Ldarg_1);
+                EmitCast(il, prop.PropertyType, false);
+
+                var ps = prop.GetIndexParameters();
+                var l = ps.Length;
+                for (int i = 0; i < l; i++)
+                {
+                    il.Emit(OpCodes.Ldarg_2);
+                    il.Emit(OpCodes.Ldc_I4, i);
+                    il.Emit(OpCodes.Ldelem_Ref);
+
+                    if (ps[i].ParameterType.IsValueType)
+                    {
+                        il.Emit(OpCodes.Unbox_Any, ps[i].ParameterType);
+                    }
+                }
+
+                if (prop.DeclaringType.IsValueType)
+                {
+                    il.Emit(OpCodes.Call, set);
+                }
+                else
+                {
+                    il.Emit(OpCodes.Callvirt, set);
+                }
+            }
+            il.Emit(OpCodes.Ret);
+
+            return (Action<object, object,object[]>)dm.CreateDelegate(typeof(Action<object, object, object[]>));
+        }
+
+
         public static void EmitCast(ILGenerator il, Type type, bool check = true)
         {
             if (type.IsValueType)

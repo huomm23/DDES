@@ -13,7 +13,8 @@ namespace Tester
         {
             public string N { get; set; }
         }
-        public class T : IT {
+        public class T : IT
+        {
             public string M { get; set; }
         }
         static void Main(string[] args)
@@ -26,12 +27,15 @@ namespace Tester
 
             CodeTimer.Time("MethodInfo", 1000000, () => GetName2(u));
             CodeTimer.Time("dynamic", 1000000, () => GetName3(u));
-            CodeTimer.Time("fast ref", 1000000, () => GetName(u));
-            CodeTimer.Time("direct", 1000000, () => GetName0(u));
+            CodeTimer.Time("fastprop", 1000000, () => GetName(u));
+            CodeTimer.Time("directprop", 1000000, () => GetName0(u));
+            CodeTimer.Time("fastindex", 1000000, () => GetIndex(u));
+            CodeTimer.Time("directindex", 1000000, () => GetIndex0(u));
 
         }
 
         static DProperty prop;
+        static DProperty index;
 
         public static object GetName(object obj)
         {
@@ -42,6 +46,17 @@ namespace Tester
                 if (prop == null) throw new NotSupportedException("对象不包含Name属性");
             }
             return prop.GetValue(obj);
+        }
+
+        public static object GetIndex(object obj)
+        {
+            if (obj == null) throw new ArgumentNullException("obj");
+            if (index == null)
+            {
+                index = DType.Create(obj.GetType()).Properties["Item"];
+                if (index == null) throw new NotSupportedException("对象不包含Name属性");
+            }
+            return index.GetValue(obj, new object[] { 0 });
         }
 
         static PropertyInfo pName;
@@ -67,6 +82,13 @@ namespace Tester
             if (obj == null) throw new ArgumentNullException("obj");
             return ((User)obj).Name;
         }
+
+        public static object GetIndex0(object obj)
+        {
+            if (obj == null) throw new ArgumentNullException("obj");
+            return ((User)obj)[0];
+        }
+
     }
 
 
@@ -80,6 +102,18 @@ namespace Tester
         public string Name { get; set; }
         public DateTime? Birthday { get; set; }
         public bool Sex { get; set; }
+        public string this[int index]
+        {
+            get
+            {
+                if (dict.ContainsKey(index))
+                    return dict[index];
+
+                return null;
+            }
+            set { }
+        }
+        private Dictionary<int, string> dict = new Dictionary<int, string>();
     }
 
 }

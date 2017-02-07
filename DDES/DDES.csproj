@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractDMember.cs" />
+    <Compile Include="DelegateService.cs" />
     <Compile Include="DEvent.cs" />
     <Compile Include="DMethod.cs" />
     <Compile Include="DProperty.cs" />

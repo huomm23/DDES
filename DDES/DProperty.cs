@@ -44,6 +44,9 @@ namespace DDES
         private Func<object, object> _Getter;
         private Action<object, object> _Setter;
 
+        private Func<object, object[], object> _IndexGetter;
+        private Action<object, object, object[]> _IndexSetter;
+
         public PropertyInfo PropertyInfo { get; private set; }
         public Type PropertyType { get; private set; }
         public bool CanRead { get; private set; }
@@ -80,8 +83,11 @@ namespace DDES
                 IsStatic = set.IsStatic;
             }
 
-            _Getter = EmitService.CreateGetter(pi);
-            _Setter = EmitService.CreateSetter(pi);
+            _Getter = EmitService.CreateGetter(pi); //DelegateService.CreateGetter(pi);// EmitService.CreateGetter(pi);
+            _Setter = EmitService.CreateSetter(pi); // DelegateService.CreateSetter(pi);// EmitService.CreateSetter(pi);
+
+            _IndexGetter = EmitService.CreateIndexGetter(pi);
+            _IndexSetter = EmitService.CreateIndexSetter(pi);
         }
 
         public object GetValue(object obj)
@@ -106,6 +112,37 @@ namespace DDES
             try
             {
                 return _Getter(obj);
+            }
+            catch (Exception ex)
+            {
+                var message = $"{PropertyInfo.ToString()}.{Name}属性取值失败";
+                Trace.WriteLine(ex, message);
+                throw new TargetInvocationException(message + ",原因见内部异常", ex);
+            }
+        }
+
+        public object GetValue(object obj, object[] index)
+        {
+            if (!CanRead)
+            {
+                throw new Exception();
+                //ErrorGetter(null);
+            }
+            else if (obj == null)
+            {
+                if (IsStatic == false)
+                {
+                    throw new ArgumentNullException("instance", "实例属性对象不能为null");
+                }
+            }
+            else if (DeclaringType.IsInstanceOfType(obj) == false)
+            {
+                throw new ArgumentException("对象[" + obj + "]无法获取[" + DeclaringType + "]的值");
+            }
+
+            try
+            {
+                return _IndexGetter(obj, index);
             }
             catch (Exception ex)
             {

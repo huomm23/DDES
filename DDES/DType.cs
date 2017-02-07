@@ -48,7 +48,7 @@ namespace DDES
             Properties = new Dictionary<string, DProperty>();
             foreach (var p in Type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
             {
-                if (p.GetIndexParameters().Length == 0) //排除索引器
+                //if (p.GetIndexParameters().Length == 0) //排除索引器
                 {
                     if (!Properties.ContainsKey(p.Name))
                     {
