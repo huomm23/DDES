@@ -205,7 +205,6 @@ namespace DDES
             return (Action<object, object,object[]>)dm.CreateDelegate(typeof(Action<object, object, object[]>));
         }
 
-
         public static void EmitCast(ILGenerator il, Type type, bool check = true)
         {
             if (type.IsValueType)

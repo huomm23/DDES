@@ -50,5 +50,8 @@
       <Name>DDES</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="测试计划.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
