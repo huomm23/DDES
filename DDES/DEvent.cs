@@ -7,6 +7,7 @@ using System.Text;
 
 namespace DDES
 {
+    
     public class DEvent : AbstractDMember
     {
         private static readonly Dictionary<EventInfo, DEvent> _Cache = new Dictionary<EventInfo, DEvent>();

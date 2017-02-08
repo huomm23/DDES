@@ -15,12 +15,12 @@ namespace DDES
     /// 所引器干扰问题
     /// 事件干扰问题
     /// </summary>
-    public class DProperty : AbstractDMember
+    public class DIndex : AbstractDMember
     {
-        private static readonly Dictionary<PropertyInfo, DProperty> _Cache = new Dictionary<PropertyInfo, DProperty>();
-        public static DProperty Create(PropertyInfo pi)
+        private static readonly Dictionary<PropertyInfo, DIndex> _Cache = new Dictionary<PropertyInfo, DIndex>();
+        public static DIndex Create(PropertyInfo pi)
         {
-            DProperty dp;
+            DIndex dp;
             if (_Cache.TryGetValue(pi, out dp))
             {
                 return dp;
@@ -34,15 +34,15 @@ namespace DDES
                 }
                 else
                 {
-                    dp = new DProperty(pi);
+                    dp = new DIndex(pi);
                 }
                 _Cache[pi] = dp;
                 return dp;
             }
         }
 
-        private Func<object, object> _Getter;
-        private Action<object, object> _Setter;
+        private Func<object, object[], object> _Getter;
+        private Action<object, object, object[]> _Setter;
 
         public PropertyInfo PropertyInfo { get; private set; }
         public Type PropertyType { get; private set; }
@@ -54,7 +54,7 @@ namespace DDES
         public bool IsNullable { get; private set; } // 是否是可空值类型
         public Type NullableType { get; private set; } // 可空值类型
 
-        private DProperty(PropertyInfo pi)
+        private DIndex(PropertyInfo pi)
             : base(pi)
         {
             PropertyInfo = pi;
@@ -80,11 +80,11 @@ namespace DDES
                 IsStatic = set.IsStatic;
             }
 
-            _Getter = EmitService.CreateGetter(pi); //DelegateService.CreateGetter(pi);// EmitService.CreateGetter(pi);
-            _Setter = EmitService.CreateSetter(pi); // DelegateService.CreateSetter(pi);// EmitService.CreateSetter(pi);
+            _Getter = EmitService.CreateIndexGetter(pi);
+            _Setter = EmitService.CreateIndexSetter(pi);
         }
 
-        public object GetValue(object obj)
+        public object GetValue(object obj, object[] index)
         {
             if (!CanRead)
             {
@@ -105,7 +105,7 @@ namespace DDES
 
             try
             {
-                return _Getter(obj);
+                return _Getter(obj, index);
             }
             catch (Exception ex)
             {
@@ -114,7 +114,8 @@ namespace DDES
                 throw new TargetInvocationException(message + ",原因见内部异常", ex);
             }
         }
-        public void SetValue(object obj, object v)
+
+        public void SetValue(object obj, object v, object[] index)
         {
             if (!CanRead)
             {
@@ -135,7 +136,7 @@ namespace DDES
 
             try
             {
-                _Setter(obj, v);
+                _Setter(obj, v, index);
             }
             catch (Exception ex)
             {
@@ -144,6 +145,5 @@ namespace DDES
                 throw new TargetInvocationException(message + ",原因见内部异常", ex);
             }
         }
-
     }
 }

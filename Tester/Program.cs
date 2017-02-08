@@ -9,22 +9,18 @@ namespace Tester
 {
     class Program
     {
-        public class IT
+        struct ss
         {
-            public string N { get; set; }
-        }
-        public class T : IT
-        {
-            public string M { get; set; }
+
         }
         static void Main(string[] args)
         {
-            var t = new { A = 213 };
-            var pi = t.GetType().GetProperty("A");
+
+
+            Test_Property.Test();
+           
             User u = new User();
             CodeTimer.Initialize();
-            //DProperty prop = DType.Create(u.GetType()).Properties["Name"];
-
             CodeTimer.Time("MethodInfo", 1000000, () => GetName2(u));
             CodeTimer.Time("dynamic", 1000000, () => GetName3(u));
             CodeTimer.Time("fastprop", 1000000, () => GetName(u));
@@ -50,13 +46,14 @@ namespace Tester
 
         public static object GetIndex(object obj)
         {
-            if (obj == null) throw new ArgumentNullException("obj");
-            if (index == null)
-            {
-                index = DType.Create(obj.GetType()).Properties["Item"];
-                if (index == null) throw new NotSupportedException("对象不包含Name属性");
-            }
-            return index.GetValue(obj, new object[] { 0 });
+            return null;
+            //if (obj == null) throw new ArgumentNullException("obj");
+            //if (index == null)
+            //{
+            //    index = DType.Create(obj.GetType()).Properties["Item"];
+            //    if (index == null) throw new NotSupportedException("对象不包含Name属性");
+            //}
+            //return index.GetValue(obj, new object[] { 0 });
         }
 
         static PropertyInfo pName;

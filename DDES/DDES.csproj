@@ -41,8 +41,11 @@
   <ItemGroup>
     <Compile Include="AbstractDMember.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="DDynamicObject.cs" />
     <Compile Include="DelegateService.cs" />
     <Compile Include="DEvent.cs" />
+    <Compile Include="DExpandoObject.cs" />
+    <Compile Include="DIndex.cs" />
     <Compile Include="DMethod.cs" />
     <Compile Include="DProperty.cs" />
     <Compile Include="DType.cs" />
